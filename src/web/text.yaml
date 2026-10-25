@@ -1,0 +1,19 @@
+title:
+  cartoon: Robot Arm
+  clean: Robot Arm
+  xeno: Bone Arm
+  fallout: ARM CONTROL 7
+app.title:
+  cartoon: Robot Arm
+  clean: Robot Arm
+  xeno: Bone Arm
+  fallout: ARM CONTROL 7
+app.tagline:
+  clean: Six STS3215 servos on one serial bus. Calibrate a joint, then move it.
+  xeno: six joints · one wire · it moves only where it was taught to
+
+cal.hint:
+  cartoon: 'Name an event <device id>/pose/load/wave and the arm strikes the wave pose when it starts! Only commands in Allowed run, space separated: pose home stop. Use the calendar''s secret iCal address.'
+  clean: 'An event titled <device id>/pose/load/wave moves the arm to the saved pose wave when it starts; <device id>/home and <device id>/stop work too. Only commands on the allowed list run, space separated: pose home stop — or pose/load to allow only loading poses. Use the calendar''s secret address in iCal format.'
+  xeno: 'Mark the almanac with <true name>/pose/load/wave and when that hour comes it takes that shape. Only the rites named here are obeyed, space between them: pose home stop — or pose/load for that alone. The almanac is its secret iCal address.'
+  fallout: 'Roster entries titled <designation>/pose/load/wave execute at start time: the arm assumes stored pose wave. Only authorized orders execute, space separated: pose home stop. Feed is the private iCal address.'

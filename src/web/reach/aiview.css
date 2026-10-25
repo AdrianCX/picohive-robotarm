@@ -1,0 +1,31 @@
+.aiterm {
+    height: min(360px, 50vh);
+    overflow-y: auto;
+    padding: 8px 10px;
+    border: 1px solid rgba(110,190,255,0.22);
+    border-radius: 6px;
+    background: #050a16;
+    color: #a9bde0;
+    font-family: ui-monospace, 'Courier New', monospace;
+    font-size: 0.72rem;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(110,190,255,0.45) transparent;
+}
+.aiterm:empty::before { content: "nothing asked yet"; opacity: 0.6; }
+.aiterm div { margin: 0; }
+.aiterm .aiyou { color: #ffffff; margin-top: 6px; }
+.aiterm .aiyou:first-child { margin-top: 0; }
+.aiterm .aiout { color: #6eaaff; }
+.aiterm .aiin { color: #8affd0; }
+.aiterm .airun { color: #f2b13c; }
+.aiterm .aiend { color: #ffffff; }
+.aiterm .aibad { color: #ff9a9a; }
+.aiterm .aiwait { opacity: 0.75; }
+.aiterm .aiwait::after { content: "\2588"; animation: aiblink 1s steps(1) infinite; margin-left: 2px; }
+@keyframes aiblink { 50% { opacity: 0; } }
+
+.aiask { display: flex; gap: 6px; }
+.reachstage .reachmenu .aiask input[type=text] { flex: 1 1 auto; min-width: 0; padding: 4px 8px; }

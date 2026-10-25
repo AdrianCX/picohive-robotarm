@@ -1,0 +1,186 @@
+.armbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.armrow {
+    border: 1px solid rgba(127,127,127,0.35);
+    border-radius: 3px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    background: rgba(127,127,127,0.05);
+}
+.armrow.armdead { opacity: 0.45; }
+
+.armhead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+.armname { font-weight: bold; letter-spacing: 0.06em; }
+.armid { font-size: 0.75rem; opacity: 0.7; }
+.armangle { margin-left: auto; font-family: ui-monospace, 'Courier New', monospace; }
+.armwarn { font-size: 0.78rem; opacity: 0.85; }
+
+.armctl { display: flex; align-items: center; gap: 8px; }
+.armctl input[type=range] { flex: 1 1 auto; min-width: 120px; }
+.armctl button { min-width: 38px; }
+
+.armidmove { margin-top: 8px; }
+.armidmove select { max-width: 55%; }
+
+.armtele { margin-top: 6px; font-size: 0.75rem; opacity: 0.7; }
+.armhint { font-size: 0.8rem; opacity: 0.8; margin-top: 16px; }
+
+@media (max-width: 600px) {
+    .armangle { margin-left: 0; width: 100%; }
+}
+
+.reachover.reachtl {
+    flex-direction: column;
+    align-items: flex-start;
+    max-height: calc(100% - 20px);
+    max-width: calc(100% - 20px);
+    z-index: 3;
+}
+
+.reachstage { --armw: min(640px, calc(100vw - 40px)); }
+.reachstage.armnarrow { --armw: min(340px, calc(100vw - 40px)); }
+.reachstage.armai { --armw: min(500px, calc(100vw - 40px)); }
+.reachrow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; max-width: 100%; }
+.reachstage .reachover button.reachon {
+    color: #0b1022;
+    background: #5cf2a8;
+    border-color: #5cf2a8;
+    box-shadow: 0 0 12px rgba(92,242,168,0.55);
+}
+.reachstage .reachover button.reachalert {
+    color: #ffe1e1;
+    background: rgba(90,14,22,0.82);
+    border-color: #ff5a5a;
+    box-shadow: 0 0 14px rgba(255,80,80,0.6);
+    animation: armpulse 1.6s ease-in-out infinite;
+}
+.reachstage .reachover button.reachalert.reachon { color: #ffffff; background: #d83a46; animation: none; }
+@keyframes armpulse { 50% { box-shadow: 0 0 4px rgba(255,80,80,0.3); } }
+.reachbadge.reachbadgewarn {
+    color: #ff9a9a;
+    border-color: rgba(255,90,90,0.6);
+    background: rgba(40,8,14,0.78);
+    white-space: normal;
+}
+.reachbadge[hidden] { display: none; }
+
+.reachmenu {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: var(--armw);
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px 14px;
+    overflow-y: auto;
+    border: 1px solid rgba(110,190,255,0.45);
+    border-radius: 8px;
+    background: #0a1022;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(110,190,255,0.45) transparent;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    color: #dbe8ff;
+    font-size: 0.85rem;
+}
+.reachmenu[hidden] { display: none; }
+.armmenuhead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: ui-monospace, 'Courier New', monospace;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #8affd0;
+}
+.reachstage .reachover .reachmenu button { padding: 4px 10px; }
+.reachmenu .armbar { margin-bottom: 0; gap: 6px; }
+.reachmenu .armbar.armbarend { justify-content: flex-end; }
+
+.reachmenu .armrow {
+    border: 1px solid rgba(110,190,255,0.22);
+    border-radius: 6px;
+    background: rgba(255,255,255,0.03);
+    padding: 9px 11px;
+    margin-bottom: 8px;
+}
+.reachmenu .poserow { display: flex; align-items: center; gap: 4px; padding: 4px 6px 4px 10px; margin-bottom: 4px; }
+.reachmenu .poserow .armname { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.reachstage .reachover .reachmenu .poserow button { padding: 2px 8px; min-width: 0; }
+.reachstage .reachmenu input[hidden], .reachmenu div[hidden] { display: none; }
+
+.reachmenu.posesave { position: absolute; top: 46px; left: calc(var(--armw) + 10px); width: 280px; flex: 0 0 auto; z-index: 5; }
+.reachmenu .armname { color: #ffffff; text-transform: uppercase; font-size: 0.8rem; }
+.reachmenu .armid, .reachmenu .armtele { color: #a9bde0; font-family: ui-monospace, 'Courier New', monospace; }
+.reachmenu .armangle { color: #8affd0; }
+.reachmenu .armwarn { color: #ff9a9a; opacity: 1; margin-bottom: 6px; }
+.reachmenu .armctl { flex-wrap: wrap; gap: 6px; }
+.armstat { margin-left: auto; font-size: 0.75rem; opacity: 0.7; }
+.armstat + .armangle { margin-left: 0; }
+.reachmenu .armhead { flex-wrap: nowrap; }
+.reachmenu .armname, .reachmenu .armid, .reachmenu .armangle { flex: 0 0 auto; width: auto; white-space: nowrap; }
+.reachmenu .armstat {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #a9bde0;
+    font-family: ui-monospace, 'Courier New', monospace;
+}
+
+.reachmenu input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 14px;
+    margin: 0;
+    background: transparent;
+    cursor: pointer;
+}
+.reachmenu input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: rgba(110,190,255,0.35); }
+.reachmenu input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; background: rgba(110,190,255,0.35); }
+.reachmenu input[type=range]::-moz-range-progress { height: 4px; border-radius: 2px; background: #5cf2a8; }
+.reachmenu input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    margin-top: -4px;
+    border: 0;
+    border-radius: 50%;
+    background: #5cf2a8;
+}
+.reachmenu input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border: 0; border-radius: 50%; background: #5cf2a8; }
+.reachstage .reachmenu .armbar input[type=text] { flex: 1 1 120px; min-width: 0; }
+.reachstage .reachmenu input[type=text],
+.reachmenu select {
+    color: #dbe8ff;
+    background: rgba(14,22,44,0.9);
+    border: 1px solid rgba(110,190,255,0.45);
+    border-radius: 6px;
+    padding: 3px 5px;
+}
+
+.armkeys {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    color: #a9bde0;
+    font-family: ui-monospace, 'Courier New', monospace;
+    font-size: 0.7rem;
+}
+.armhelp { color: #a9bde0; font-size: 0.75rem; }
+.armhelp summary { cursor: pointer; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.7rem; }
+.armhelp p { margin: 6px 0 0; }
+.reachmenu .reachline.reachbad { color: #ff9a9a; }
+.reachmenu .armmenuhead + .reachline { margin-top: -4px; }

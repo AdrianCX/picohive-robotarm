@@ -1,0 +1,172 @@
+<div class="reachwrap">
+  <div class="reachstage" id="reach-stage">
+    <canvas class="reachglview" id="reachgl"></canvas>
+    <canvas class="reachview" id="reachview"></canvas>
+
+    <div class="reachover reachtl">
+      <div class="reachrow">
+        <span class="reachbadge" id="reach-badge" onclick="reachSetWebgl(!reachGlWanted)"
+              title="click to switch between WebGL and the 2D canvas">2D canvas</span>
+        <button type="button" id="arm-menubtn" onclick="armMenu()"
+                title="every joint: limits, ids, sliders">Calibration</button>
+        <button type="button" id="arm-mapbtn" onclick="armMapMenu()"
+                title="line the 3D model up with the real arm">3D mapping</button>
+        <button type="button" id="arm-posesbtn" onclick="armPosesMenu()"
+                title="named positions: save, go to, describe">Poses</button>
+        <button type="button" id="arm-aibtn" onclick="armAiMenu()"
+                title="tell it what to do, in words: the pico asks OpenAI">AI</button>
+        <button type="button" id="drive-btn" onclick="driveShow()"
+                title="the four motors under it: a stick to drag">Drive</button>
+      </div>
+      <span class="reachbadge reachbadgewarn" id="arm-warn" hidden></span>
+
+      <div class="reachmenu" id="arm-menu" hidden>
+        <div class="armbar">
+          <button type="button" onclick="armCommand('home', 'Home all')">Home all</button>
+          <button type="button" onclick="armCommand('stop', 'Stop')">Stop</button>
+          <button type="button" onclick="armCommand('torque/all/off', 'Go limp')">Go limp</button>
+          <button type="button" onclick="armCommand('torque/all/on', 'Hold')">Hold</button>
+          <button type="button" onclick="armCommand('scan', 'Scan the bus')">Scan</button>
+        </div>
+
+        <div id="arm-joints"></div>
+      </div>
+
+      <div class="reachmenu" id="arm-poses" hidden>
+        <div class="armbar">
+          <button type="button" onclick="poseSaveBox(true)"
+                  title="where the arm is now, under a name">Save position</button>
+        </div>
+
+        <div id="pose-list"></div>
+      </div>
+
+      <div class="reachmenu posesave" id="pose-savebox" hidden>
+        <div class="armmenuhead"><span id="pose-boxtitle">Save position</span></div>
+        <div class="armkeys"><span id="pose-boxhint"></span></div>
+        <input type="text" id="pose-name" maxlength="15" placeholder="name: letters, digits, - or _"
+               oninput="posePaint()" onkeydown="poseSaveKey(event)">
+        <input type="text" id="pose-desc" maxlength="120" placeholder="what it is, e.g. over the bowl (optional)"
+               onkeydown="poseSaveKey(event)">
+        <div class="armctl">
+          <button type="button" id="pose-save" onclick="poseSave()">Save</button>
+          <button type="button" onclick="poseSaveBox(false)">Cancel</button>
+        </div>
+      </div>
+
+      <div class="reachmenu aimenu" id="arm-ai" hidden>
+        <div class="aiterm" id="ai-term"></div>
+        <div class="aiask">
+          <input type="text" id="ai-text" maxlength="500" placeholder="e.g. wave, then go to rest"
+                 spellcheck="false" onkeydown="aiViewKey(event)">
+          <button type="button" onclick="aiViewAsk()">Send</button>
+          <button type="button" onclick="aiViewStop()" title="ends the request and the plan it is running">Stop</button>
+        </div>
+      </div>
+
+      <div class="reachmenu" id="arm-map" hidden>
+        <div class="armmenuhead"><span>Calibrate the 3D model to these positions</span></div>
+        <div id="reach-poses"></div>
+        <div class="armbar armbarend">
+          <button type="button" onclick="reachLimp()"
+                  title="every servo lets go, so the arm can be moved by hand">Go limp</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="reachover reachtr">
+      <div class="reachpins" title="pin one coordinate: the dots on that plane are the ones a click picks">
+        <button type="button" id="reach-pinx" onclick="reachSetLock('x')">pin x</button>
+        <button type="button" id="reach-piny" onclick="reachSetLock('y')">pin y</button>
+        <button type="button" id="reach-pinz" onclick="reachSetLock('z')">pin z</button>
+      </div>
+      <label class="reachdirect" title="every dot, not just the ones near the pointer">
+        <input type="checkbox" id="reach-showall" onchange="reachSetShowAll(this.checked)">
+        show all
+      </label>
+      <label class="reachdirect" title="with this on, every key press goes straight to the arm">
+        <input type="checkbox" id="reach-direct" checked onchange="reachSetDirect(this.checked)">
+        move directly
+      </label>
+      <label class="reachdirect" title="how hard the gripper squeezes what it holds. = harder, - softer">
+        grip
+        <input type="range" id="reach-strength" min="10" max="100" step="10" value="100"
+               oninput="gripSetStrength(this.value)">
+        <span id="reach-strengthval" class="armid">100%</span>
+      </label>
+      <button type="button" id="reach-grip" onclick="reachGrab(event)"
+              title="open and close the gripper. Shift click if it has them the wrong way round">Not grabbed</button>
+      <button type="button" id="reach-go" onclick="reachGo()" title="move the arm to the picked target (Enter)">Go</button>
+      <button type="button" id="reach-grid" onclick="reachCycleGrid()" title="spacing of the dots">Grid 30mm</button>
+      <button type="button" id="reach-full" onclick="reachFullscreen()" title="full screen (Esc leaves)">&#x26F6;</button>
+    </div>
+
+    <div class="reachover reachbl">
+      <div class="reachmsgs">
+        <span class="reachnote" id="reach-note"></span>
+        <span class="reachnote" id="arm-note"></span>
+        <span class="reachnote" id="pose-note"></span>
+        <span class="reachnote" id="drive-note"></span>
+      </div>
+      <div class="reachlegend">
+      <span><i style="background:#5cf2a8"></i>room to spare <i style="background:#f2b13c"></i>near a stop <i style="border:1px solid #aab9d7"></i>out of reach</span>
+      <span>click picks &middot; double click goes &middot; &#9650;&#9660; slide a pin</span>
+      <span>colour is place: <b style="color:#ff6e6e">x</b> forward, <b style="color:#78f08c">y</b> left, <b style="color:#6eaaff">z</b> up</span>
+      <span>the torch lands on the cloud &middot; wheel: push it in / pull it out &middot; ctrl + wheel: zoom</span>
+      <span>hold right: fly with WASD, Q/E &middot; drag: turn round &middot; home: reset view</span>
+      <span>enter goes &middot; esc cancels</span>
+      </div>
+    </div>
+
+    <div class="reachover reachdrive" id="drive-panel" hidden>
+      <div class="drivegrip" id="drive-grip" title="drag to move">
+        <span>Drive</span>
+        <button type="button" onclick="driveStop()" title="space">Stop</button>
+      </div>
+
+      <div class="drivepad" id="drivepad" tabindex="0" role="application" aria-label="Drive joystick">
+        <i class="drivecross-h"></i>
+        <i class="drivecross-v"></i>
+        <i class="drivedead" id="drivedead"></i>
+        <i class="driveknob" id="driveknob"></i>
+      </div>
+
+      <div class="driveouts">
+        <div class="drivebox">
+          <div class="armid">Left</div>
+          <div class="driveval" id="drive-left">0</div>
+          <div class="drivebar"><i id="drive-left-bar"></i></div>
+        </div>
+        <div class="drivebox">
+          <div class="armid">Right</div>
+          <div class="driveval" id="drive-right">0</div>
+          <div class="drivebar"><i id="drive-right-bar"></i></div>
+        </div>
+      </div>
+
+      <div class="drivectl">
+        <button type="button" onclick="driveNudgePower(-1)" title="[">&minus;</button>
+        <span>keys <b id="drive-keypower">40%</b></span>
+        <button type="button" onclick="driveNudgePower(1)" title="]">+</button>
+      </div>
+      <div class="drivectl">
+        <label><input type="checkbox" id="drive-flip-fb"
+                      onchange="driveSetFlip('fb', this.checked)"> flip front/back</label>
+        <label><input type="checkbox" id="drive-flip-lr"
+                      onchange="driveSetFlip('lr', this.checked)"> flip left/right</label>
+      </div>
+
+    </div>
+
+    <div class="reachover reachbr">
+      <div id="reach-hudslot"></div>
+      <div id="reach-toastslot"></div>
+      <div class="reacharrows" id="reach-planearrows" hidden>
+        <button type="button" onclick="reachPlaneStep(1)" title="slide the plane one step up">&#9650;</button>
+        <span class="reachat" id="reach-planeat">&mdash;</span>
+        <button type="button" onclick="reachPlaneStep(-1)" title="slide the plane one step down">&#9660;</button>
+      </div>
+    </div>
+  </div>
+
+</div>

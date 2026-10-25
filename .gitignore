@@ -1,0 +1,7 @@
+build/
+*.html.gz
+*.html.gz.hex.h
+__pycache__/
+# OTA signing/encryption keys and the HTTPS certificate: private, never commit
+keys/
+certificate/

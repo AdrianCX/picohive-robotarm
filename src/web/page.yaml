@@ -1,0 +1,12 @@
+text: text.yaml
+
+config:
+  telegram: off
+  calendar: off
+  openai:   on
+
+tabs:
+  firmware: on
+  add_tab:
+    reach: reach/
+  order: [reach, config]
