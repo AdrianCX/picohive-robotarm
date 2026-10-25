@@ -1,0 +1,112 @@
+.reachover.reachdrive {
+    top: 110px;
+    right: 10px;
+    z-index: 4;
+    width: 196px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 8px 10px 10px;
+    border: 1px solid rgba(110,190,255,0.45);
+    border-radius: 8px;
+    background: rgba(10,16,34,0.88);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    color: #dbe8ff;
+    font-size: 0.78rem;
+}
+
+.drivegrip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: -8px -10px 0;
+    padding: 6px 10px;
+    border-bottom: 1px solid rgba(110,190,255,0.22);
+    font-family: ui-monospace, 'Courier New', monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #8affd0;
+    cursor: move;
+    touch-action: none;
+    user-select: none;
+}
+.reachstage .reachover .drivegrip button { padding: 2px 10px; font-size: 0.75rem; min-width: 0; }
+
+.drivepad {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    border: 1px solid rgba(110,190,255,0.35);
+    border-radius: 6px;
+    background:
+        radial-gradient(circle at center,
+            hsla(0, 80%, 50%, 0.16) 0%,
+            hsla(45, 85%, 52%, 0.14) 42%,
+            hsla(90, 75%, 48%, 0.14) 70%,
+            hsla(130, 70%, 45%, 0.20) 100%),
+        rgba(255,255,255,0.03);
+    touch-action: none;
+    outline: none;
+    cursor: crosshair;
+    overflow: hidden;
+}
+.drivepad:focus-visible { box-shadow: 0 0 0 1px #5cf2a8 inset; }
+.drivepad i { position: absolute; }
+
+.drivecross-h { left: 8%; right: 8%; top: 50%; height: 1px; background: rgba(170,185,215,0.35); }
+.drivecross-v { top: 8%; bottom: 8%; left: 50%; width: 1px; background: rgba(170,185,215,0.35); }
+
+.drivedead {
+    top: 50%; left: 50%;
+    border-radius: 50%;
+    border: 1px dashed rgba(170,185,215,0.6);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.driveknob {
+    top: 50%; left: 50%;
+    width: 36px; height: 36px; margin: -18px 0 0 -18px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.5);
+    background: #8B9095;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4), inset 0 0 0 3px rgba(255,255,255,0.22);
+    pointer-events: none;
+    will-change: transform, background-color;
+}
+.drivepad.dragging .driveknob { box-shadow: 0 1px 2px rgba(0,0,0,0.4), inset 0 0 0 3px rgba(255,255,255,0.3); }
+
+.driveouts { display: flex; gap: 8px; }
+.drivebox {
+    flex: 1 1 0;
+    min-width: 0;
+    border: 1px solid rgba(110,190,255,0.22);
+    border-radius: 6px;
+    background: rgba(255,255,255,0.03);
+    padding: 5px 6px;
+    text-align: center;
+}
+.drivebox .armid { color: #a9bde0; }
+.driveval {
+    font-family: ui-monospace, 'Courier New', monospace;
+    font-size: 1.05rem;
+    font-weight: bold;
+}
+.driveval.rev { opacity: 0.7; }
+
+.drivebar {
+    position: relative;
+    height: 5px;
+    margin-top: 4px;
+    background: rgba(170,185,215,0.2);
+    border-radius: 3px;
+    overflow: hidden;
+}
+.drivebar > i { position: absolute; top: 0; bottom: 0; left: 50%; width: 0; }
+
+.drivectl { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 10px; }
+.reachstage .reachdrive .drivectl label { display: flex; align-items: center; gap: 4px; color: #dbe8ff; cursor: pointer; }
+.drivectl input { margin: 0; }
+.reachstage .reachover .drivectl button { padding: 2px 10px; min-width: 0; }

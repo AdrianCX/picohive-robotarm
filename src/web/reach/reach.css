@@ -1,0 +1,237 @@
+.reachwrap { display: flex; flex-direction: column; gap: 10px; }
+
+.masthead { display: none !important; }
+
+.reachview {
+    width: 100%;
+    height: 100%;
+    border: 1px solid rgba(110,190,255,0.35);
+    border-radius: 8px;
+    background: #0b1022;
+    box-shadow: 0 10px 40px rgba(10,20,60,0.45), inset 0 0 0 1px rgba(255,255,255,0.03);
+    touch-action: none;
+    cursor: grab;
+    display: block;
+}
+.reachview.reachdragging { cursor: grabbing; }
+
+.reachglview {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 0;
+}
+.reachwithgl .reachview { background: transparent; position: relative; z-index: 1; }
+.reachview.reachlocked { cursor: crosshair; }
+.reachview.reachflying { cursor: move; }
+
+.reachline {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-family: ui-monospace, 'Courier New', monospace;
+    font-size: 0.8rem;
+}
+.reachline b { font-weight: normal; opacity: 0.65; font-family: inherit; }
+.reachline.reachbad { color: #B4121F; opacity: 1; }
+
+.reachctl { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.reachctl input[type=range] { flex: 1 1 110px; min-width: 90px; }
+.reachctl label { font-size: 0.78rem; opacity: 0.75; }
+
+.reachstage {
+    position: relative;
+    height: 600px;
+    width: calc(100vw - 20px);
+    margin-left: calc(50% - 50vw + 10px);
+}
+.reachstage.reachfull { width: 100vw; height: 100vh; margin: 0; background: #0b1022; }
+.reachstage.reachfull .reachview, .reachstage.reachfull .reachglview { border-radius: 0; border: 0; }
+.reachstage.reachfaux { position: fixed; inset: 0; z-index: 1000; }
+html.reachfit, html.reachfit body { overflow: hidden; }
+.reachover { position: absolute; display: flex; gap: 6px; z-index: 2; }
+.reachover.reachtr { top: 10px; right: 10px; flex-wrap: wrap; justify-content: flex-end; max-width: 50%; }
+.reachover.reachbr { right: 10px; bottom: 10px; flex-direction: column; align-items: flex-end; gap: 8px; max-width: 45%; }
+.reacharrows { display: flex; flex-direction: column; align-items: stretch; gap: 6px; }
+.reacharrows[hidden] { display: none; }
+.reachstage .reachover button {
+    padding: 7px 11px;
+    font-size: 0.85rem;
+    min-width: 42px;
+    color: #dbe8ff;
+    background: rgba(14,22,44,0.72);
+    border: 1px solid rgba(110,190,255,0.45);
+    border-radius: 6px;
+    backdrop-filter: blur(4px);
+    cursor: pointer;
+}
+.reachstage .reachover button:hover { border-color: rgba(150,230,255,0.9); background: rgba(30,50,90,0.8); }
+.reachover .reachat {
+    text-align: center;
+    font-family: ui-monospace, 'Courier New', monospace;
+    font-size: 0.72rem;
+    color: #8affd0;
+    padding: 2px 0;
+}
+.reachover[hidden] { display: none; }
+.reachover .reachdirect {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 9px;
+    border: 1px solid rgba(110,190,255,0.45);
+    border-radius: 6px;
+    background: rgba(14,22,44,0.72);
+    color: #dbe8ff;
+    backdrop-filter: blur(4px);
+    font-size: 0.78rem;
+    white-space: nowrap;
+    cursor: pointer;
+}
+.reachover .reachdirect input { margin: 0; }
+
+.reachpins { display: flex; }
+.reachstage .reachover .reachpins button { border-radius: 0; margin-left: -1px; font-family: ui-monospace, 'Courier New', monospace; }
+.reachstage .reachover .reachpins button:first-child { border-radius: 6px 0 0 6px; margin-left: 0; }
+.reachstage .reachover .reachpins button:last-child { border-radius: 0 6px 6px 0; }
+.reachstage .reachover .reachpins button.reachon {
+    color: #0b1022;
+    background: #5cf2a8;
+    border-color: #5cf2a8;
+    box-shadow: 0 0 12px rgba(92,242,168,0.55);
+    position: relative;
+}
+.reachover .reachdirect input[type=range] { width: 90px; }
+
+.reachover.reachbl {
+    left: 10px;
+    bottom: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    max-width: calc(100% - 20px);
+    pointer-events: none;
+}
+.reachlegend {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 7px 10px;
+    border: 1px solid rgba(110,190,255,0.3);
+    border-radius: 6px;
+    background: rgba(14,22,44,0.6);
+    color: #a9bde0;
+    font-family: ui-monospace, 'Courier New', monospace;
+    font-size: 0.7rem;
+    pointer-events: none;
+}
+.reachlegend i {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin: 0 5px 0 10px;
+}
+.reachlegend i:first-child { margin-left: 0; }
+
+.reachover.reachtl { top: 10px; left: 10px; pointer-events: auto; }
+.reachbadge {
+    padding: 4px 9px;
+    border: 1px solid rgba(170,185,215,0.4);
+    border-radius: 999px;
+    background: rgba(14,22,44,0.72);
+    color: #aab9d7;
+    font-family: ui-monospace, 'Courier New', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+}
+.reachbadge.reachbadgegl {
+    color: #5cf2a8;
+    border-color: rgba(92,242,168,0.55);
+    box-shadow: 0 0 10px rgba(92,242,168,0.25);
+}
+
+.reachmsgs { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.reachnote {
+    padding: 6px 10px;
+    border: 1px solid rgba(138,255,208,0.45);
+    border-radius: 6px;
+    background: rgba(14,22,44,0.8);
+    color: #8affd0;
+    font-family: ui-monospace, 'Courier New', monospace;
+    font-size: 0.75rem;
+    max-width: 560px;
+}
+.reachnote:empty { display: none; }
+.reachstage #toasts {
+    position: static;
+    align-items: flex-end;
+    max-width: 420px;
+}
+.reachstage #toasts .toast {
+    margin: 0;
+    padding: 6px 10px;
+    border: 1px solid rgba(110,190,255,0.45);
+    border-radius: 6px;
+    background: rgba(14,22,44,0.8);
+    color: #dbe8ff;
+    box-shadow: none;
+    font-family: ui-monospace, 'Courier New', monospace;
+    font-size: 0.75rem;
+    font-weight: normal;
+}
+.reachstage #toasts .toast::before { content: none; }
+.reachstage #toasts .toast.ok { border-color: rgba(92,242,168,0.6); }
+.reachstage #toasts .toast.bad { border-color: #ff5a5a; color: #ffb4b4; background: rgba(40,8,14,0.85); }
+.reachstage #toasts .toast.info { border-color: rgba(242,177,60,0.7); }
+
+#reach-hudslot { flex: 0 1 auto; min-width: 0; max-width: min(420px, 100%); }
+.reachstage #hud { max-width: 100%; }
+.reachstage #hud {
+    margin: 0;
+    padding: 4px 10px;
+    min-height: 0;
+    gap: 8px;
+    border: 1px solid rgba(110,190,255,0.45);
+    border-radius: 999px;
+    background: rgba(14,22,44,0.8);
+    box-shadow: none;
+    color: #dbe8ff;
+    font-family: ui-monospace, 'Courier New', monospace;
+    font-size: 0.72rem;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.reachstage #hud .hud-state, .reachstage #hud .hud-detail {
+    color: inherit;
+    font: inherit;
+    letter-spacing: 0;
+    text-transform: none;
+}
+.reachstage #hud .hud-detail { color: #a9bde0; overflow: hidden; text-overflow: ellipsis; }
+.reachstage #hud .hud-lamp {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex: 0 0 auto;
+    background: #f2b13c;
+    box-shadow: 0 0 8px currentColor;
+}
+.reachstage #hud.hud-ok .hud-lamp, .reachstage #hud.hud-online .hud-lamp { background: #5cf2a8; color: #5cf2a8; }
+.reachstage #hud.hud-fail, .reachstage #hud.hud-offline { border-color: #ff5a5a; }
+.reachstage #hud.hud-fail .hud-lamp, .reachstage #hud.hud-offline .hud-lamp { background: #ff5a5a; color: #ff5a5a; }
+.reachstage #hud .hud-bar { display: none; }
+.reachstage #hud #hud-retry { padding: 2px 8px; font-size: 0.7rem; }
+
+@media (max-width: 760px) {
+    .reachover.reachtl { max-width: calc(100% - 20px); }
+    .reachover.reachtr { top: auto; bottom: 10px; max-width: 55%; }
+    .reachover.reachbr { bottom: auto; top: 50px; }
+    .reachover.reachbl { max-width: 42%; }
+    .reachlegend { display: none; }
+}
