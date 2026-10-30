@@ -84,6 +84,7 @@ struct Torque
 {
     static constexpr std::string_view name = "torque";
     static constexpr std::string_view help = "torque/<joint>/<on|off> - hold, or go limp";
+    static constexpr std::string_view ai_help = "torque/<joint>/<on|off> - off goes limp and the arm falls";
     static constexpr std::string_view mqtt_prefix = "send/";
     static constexpr std::string_view ws_prefix = "/rc/";
 
@@ -94,6 +95,7 @@ struct Strength
 {
     static constexpr std::string_view name = "strength";
     static constexpr std::string_view help = "strength/<joint>/<percent> - how hard it may push";
+    static constexpr std::string_view ai_help = "strength/<joint>/<percent> - how hard it may push; the grip";
     static constexpr std::string_view mqtt_prefix = "send/";
     static constexpr std::string_view ws_prefix = "/rc/";
 
@@ -104,6 +106,7 @@ struct Speed
 {
     static constexpr std::string_view name = "speed";
     static constexpr std::string_view help = "speed/<joint>/<steps per second>[/<acceleration>]";
+    static constexpr std::string_view ai_help = "speed/<joint>/<steps/s>[/<accel>] - 1200 is ~100 deg/s";
     static constexpr std::string_view mqtt_prefix = "send/";
     static constexpr std::string_view ws_prefix = "/rc/";
 

@@ -18,65 +18,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <math.h>
 
-#include "arm_args.h"
 #include "arm.h"
 #include "arm_reach.h"
-#include "reach.h"
-
-bool Reach::on_header(CommandContext& ctx)
-{
-    std::string_view args = ctx.args;
-    std::string_view piece;
-    int32_t x = 0;
-    int32_t y = 0;
-    int32_t z = 0;
-    int32_t pitch = 0;
-
-    if (!arm_next(args, piece) || !arm_parse_int(piece, x) ||
-        !arm_next(args, piece) || !arm_parse_int(piece, y) ||
-        !arm_next(args, piece) || !arm_parse_int(piece, z))
-    {
-        return ctx.reply_fmt((uint32_t)help.size(), "%.*s", (int)help.size(), help.data());
-    }
-
-    bool pitch_given = arm_next(args, piece);
-
-    if (pitch_given && !arm_parse_int(piece, pitch))
-    {
-        return ctx.reply_fmt(144, "pitch is whole degrees from straight up, got [%.*s]", (int)piece.size(), piece.data());
-    }
-
-    ArmReach& reach = ArmReach::get();
-    const char *why = NULL;
-    const char *missed = NULL;
-
-    if (!reach.solve(x, y, z, pitch_given, pitch, why))
-    {
-        missed = why;
-
-        if (!reach.towards(x, y, z, why))
-        {
-            return ctx.reply_fmt(256, "cannot reach %d,%d,%d: %s, and %s", (int)x, (int)y, (int)z, missed, why);
-        }
-    }
-    else
-    {
-        reach.m_x = x;
-        reach.m_y = y;
-        reach.m_z = z;
-    }
-
-    if (!reach.go(why))
-    {
-        return ctx.reply_fmt(112, "not moving: %s", why);
-    }
-
-    return ctx.reply_fmt(432, "%s %d,%d,%d mm, pitch %d: pan %d lift %d elbow %d wrist %d%s%s",
-                     (missed != NULL) ? "short of it, heading to" : "heading to",
-                     (int)lround(reach.m_x), (int)lround(reach.m_y), (int)lround(reach.m_z), (int)lround(reach.m_pitch),
-                     (int)lround(reach.m_q[0]), (int)lround(reach.m_q[1]), (int)lround(reach.m_q[2]), (int)lround(reach.m_q[3]),
-                     (missed != NULL) ? " - all the way is " : "", (missed != NULL) ? missed : "");
-}
+#include "where.h"
 
 bool Where::on_header(CommandContext& ctx)
 {
@@ -107,11 +51,6 @@ bool Where::on_header(CommandContext& ctx)
 
     return ctx.reply(text);
 }
-
-MQTT_COMMAND(Reach);
-WS_COMMAND(Reach);
-TELEGRAM_COMMAND(Reach);
-AI_COMMAND(Reach);
 
 uint32_t PosesWhereLines::line(uint32_t index, char *out, uint32_t size)
 {

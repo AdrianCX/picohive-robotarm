@@ -34,7 +34,7 @@ struct Status
 {
     static constexpr std::string_view name = "status";
     static constexpr std::string_view help = "status - every joint, in words";
-    static constexpr std::string_view ai_help = "status - each joint: angle, limits, volts, temperature, moving";
+    static constexpr std::string_view ai_help = "status - joints: angle, limits, volts, temp, load; grip holding?";
     static constexpr std::string_view mqtt_prefix = "send/";
     static constexpr std::string_view ws_prefix = "/rc/";
     static constexpr std::string_view telegram_prefix = "/";

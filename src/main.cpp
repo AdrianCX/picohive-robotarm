@@ -29,9 +29,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "chassis.h"
 #include "command_request_handler.h"
 #include "general_config.h"
-#include "openai_agent.h"
+#include "ai_tools.h"
 #include "openai_manager.h"
-#include "openai_sequence.h"
 #include "wifi.h"
 
 #include "rc/index.html.gz.hex.h"
@@ -51,11 +50,20 @@ void on_boot()
 
     Chassis::get().initialize();
 
-    AiSequence::get().set_ready([]() { return ArmManager::get().settled(); });
-    OpenAIAgent::get().set_app_instructions(
-        "It is a robot arm; each step starts once the arm has stopped moving. "
-        "Move only with joints/<pan>/<lift>/<elbow>/<wrist>/<roll>/<grip> in degrees, - for a joint left as it is; "
-        "never load a pose. Saved poses are only there to read: poses/where gives each one's joints to copy or adjust.");
+    AiTools::set_ready([]() { return ArmManager::get().settled() && !Chassis::get().moving(); });
+    AiTools::set_instructions(
+        "It is a robot arm; a command that moves it is done once the arm has stopped moving. "
+        "Move the arm only with joints/<pan>/<lift>/<elbow>/<wrist>/<roll>/<grip> in degrees, - for a joint left as it is; "
+        "never load a pose. Saved poses are only there to read: poses/where gives each one's joints to copy or adjust. "
+        "The arm rides a skid-steer chassis, driven like a tank: drive/<left>/<right>/<ms>, each side's power -100..100, "
+        "positive forward, for ms (10000 at most), then it stops. Both sides equal goes straight; opposite signs spin it "
+        "in place - drive/100/-100 turns right, drive/-100/100 turns left; at full power about 550 ms is half a turn, "
+        "then adjust. Unequal sides curve. Lower power for smaller, gentler moves. "
+        "To keep the arm pointing the same way while the chassis spins, raise pan while drive/-60/60 runs and lower it "
+        "while drive/60/-60 runs. "
+        "For several moves in a row, send them as one plan: its body lists the commands, and the board runs them "
+        "one after the other, each once the last has stopped; \"w\":0 on a step starts the next one with it, "
+        "at the same time.");
 }
 
 bool is_access_point()

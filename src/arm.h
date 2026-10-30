@@ -120,6 +120,8 @@ public:
 
     bool set_strength(uint32_t index, uint16_t limit);
 
+    bool holding(int32_t& short_deci) const;
+
     bool calibrate_start(uint32_t index);
     bool calibrate_finish(uint32_t index, uint16_t margin);
     void calibrate_cancel(uint32_t index);

@@ -25,17 +25,10 @@ class ArmReach
 public:
     static ArmReach& get();
 
-    bool solve(int32_t x, int32_t y, int32_t z, bool pitch_given, int32_t pitch, const char *&why);
-
     bool where(const char *&why);
 
     bool forward(const uint16_t *position, const char *&why);
 
-    bool go(const char *&why);
-
-    bool towards(int32_t x, int32_t y, int32_t z, const char *&why);
-
-    double m_q[4] = {};
     double m_pitch = 0;
     double m_now[4] = {};
     double m_x = 0;
@@ -44,17 +37,9 @@ public:
 
 private:
     bool mapping(const char *&why);
-    bool solve_at(double x, double y, double z, double pitch, bool elbow_up);
 
     double m_zero[4] = {};
     double m_sign[4] = {};
-    double m_low[4] = {};
-    double m_high[4] = {};
 
     uint16_t m_position[4] = {};
-    double m_try[4] = {};
-    double m_best[4] = {};
-    double m_best_pitch = 0;
-    double m_margin = 0;
-    const char *m_why = "";
 };

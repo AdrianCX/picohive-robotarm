@@ -520,9 +520,12 @@ WS_COMMAND(SetId);
 
 MQTT_COMMAND(Torque);
 WS_COMMAND(Torque);
+AI_COMMAND(Torque);
 
 MQTT_COMMAND(Strength);
 WS_COMMAND(Strength);
+AI_COMMAND(Strength);
 
 MQTT_COMMAND(Speed);
 WS_COMMAND(Speed);
+AI_COMMAND(Speed);

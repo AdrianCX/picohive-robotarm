@@ -29,9 +29,11 @@ public:
 
     void initialize();
 
-    void drive(uint64_t now_us, int left, int right);
+    void drive(uint64_t now_us, int left, int right, uint64_t duration_us = 0);
 
     void update(uint64_t now_us);
+
+    bool moving() const { return (m_left != 0) || (m_right != 0); }
 
     int left() const { return m_left; }
     int right() const { return m_right; }
@@ -45,5 +47,6 @@ private:
     int m_left = 0;
     int m_right = 0;
     uint64_t m_lastDriveUs = 0;
+    uint64_t m_stopAtUs = 0;
     bool m_initialized = false;
 };

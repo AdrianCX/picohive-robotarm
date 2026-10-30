@@ -4,6 +4,7 @@ config:
   telegram: off
   calendar: off
   openai:   on
+  mcp:      on
 
 tabs:
   firmware: on

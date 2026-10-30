@@ -59,12 +59,13 @@ static int clamp_power(int power)
     return (power < -MOTOR_MAX_POWER) ? -MOTOR_MAX_POWER : power;
 }
 
-void Chassis::drive(uint64_t now_us, int left, int right)
+void Chassis::drive(uint64_t now_us, int left, int right, uint64_t duration_us)
 {
     left = clamp_power(left);
     right = clamp_power(right);
 
     m_lastDriveUs = now_us;
+    m_stopAtUs = (duration_us > 0) ? (now_us + duration_us) : 0;
 
     if ((left == m_left) && (right == m_right))
     {
@@ -89,6 +90,17 @@ void Chassis::drive(uint64_t now_us, int left, int right)
 
 void Chassis::update(uint64_t now_us)
 {
+    if (m_stopAtUs != 0)
+    {
+        if (now_us >= m_stopAtUs)
+        {
+            trace("Chassis::update: timed drive over, stopping");
+            drive(now_us, 0, 0);
+        }
+
+        return;
+    }
+
 #if DRIVE_TIMEOUT_US > 0
     if (((m_left != 0) || (m_right != 0)) && ((now_us - m_lastDriveUs) > DRIVE_TIMEOUT_US))
     {

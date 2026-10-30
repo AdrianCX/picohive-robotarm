@@ -35,6 +35,8 @@ static constexpr unsigned int ARM_GRIPPER = ARM_JOINT_COUNT - 1;
 
 #define POSE_TIMEOUT_US     20000000
 
+#define ARM_GRIP_SHORT_STEPS    34
+
 #define ARM_SCAN_MAX_ID     12
 
 #define ARM_POLL_INTERVAL_US    30000
@@ -58,5 +60,7 @@ static constexpr unsigned int ARM_GRIPPER = ARM_JOINT_COUNT - 1;
 #define MOTOR_PWM 1
 
 #define DRIVE_TIMEOUT_US (1500 * 1000)
+
+#define DRIVE_MAX_MS 10000
 
 #endif

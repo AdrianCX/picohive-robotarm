@@ -17,6 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "os_platform.h"
@@ -533,6 +534,22 @@ bool ArmManager::set_strength(uint32_t index, uint16_t limit)
     return m_joint[index].present && m_servo[index].set_torque_limit(limit);
 }
 
+bool ArmManager::holding(int32_t& short_deci) const
+{
+    const ArmJoint& joint = m_joint[ARM_GRIPPER];
+    uint16_t goal = 0;
+
+    if (!joint.present || !joint.state_valid || joint.state.moving || !m_servo[ARM_GRIPPER].goal(goal))
+    {
+        return false;
+    }
+
+    int32_t steps = abs((int32_t)goal - (int32_t)joint.state.position);
+
+    short_deci = abs(position_to_deci(goal) - position_to_deci(joint.state.position));
+    return steps > ARM_GRIP_SHORT_STEPS;
+}
+
 bool ArmManager::calibrate_start(uint32_t index)
 {
     return m_joint[index].present && m_servo[index].calibrate_start();
@@ -982,9 +999,25 @@ uint32_t ArmManager::status_text(char *out, uint32_t size)
 
         if (pos < (int)size)
         {
-            pos += snprintf(&out[pos], size - pos, ", %u.%uV %uC%s\n",
+            pos += snprintf(&out[pos], size - pos, ", %u.%uV %uC, load %d%% %dmA%s",
                             (unsigned int)(joint.state.voltage / 10), (unsigned int)(joint.state.voltage % 10),
-                            (unsigned int)joint.state.temperature, joint.state.moving ? ", moving" : "");
+                            (unsigned int)joint.state.temperature, (int)(joint.state.load / 10),
+                            (int)((joint.state.current * 65) / 10), joint.state.moving ? ", moving" : "");
+        }
+
+        int32_t short_deci = 0;
+
+        if ((index == ARM_GRIPPER) && (pos < (int)size))
+        {
+            pos += holding(short_deci)
+                ? snprintf(&out[pos], size - pos, ", holding something (stopped %d.%d deg short of its goal)",
+                           (int)(short_deci / 10), (int)(short_deci % 10))
+                : snprintf(&out[pos], size - pos, ", holding nothing");
+        }
+
+        if (pos < (int)size)
+        {
+            pos += snprintf(&out[pos], size - pos, "\n");
         }
     }
 

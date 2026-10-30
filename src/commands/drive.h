@@ -23,7 +23,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 struct Drive
 {
     static constexpr std::string_view name = "drive";
-    static constexpr std::string_view help = "drive/<left>/<right> - side speeds, -100..100";
+    static constexpr std::string_view help = "drive/<left>/<right>[/<ms>] - side speeds, -100..100, for ms";
+    static constexpr std::string_view ai_help = "drive/<left>/<right>/<ms> - tank sides -100..100; opposite spins";
     static constexpr std::string_view mqtt_prefix = "send/";
     static constexpr std::string_view ws_prefix = "/rc/";
 

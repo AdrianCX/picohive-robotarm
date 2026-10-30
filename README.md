@@ -46,7 +46,8 @@ The arm is drawn in 3D from what the servos report; click a dot to put a target 
 3. **Configure wifi** and a user/pass for the web ui
 4. **Optional**:\
 4.1. **Remote server** enter line from picohive for logging/OTA/crash reporting\
-4.2. **OpenAI** enter the URL, key, model and prompt
+4.2. **OpenAI** enter the URL, key, model and prompt\
+4.3. **MCP** tick *Enable MCP* so Claude Code (or any MCP client) can drive the arm: `claude mcp add --transport http robotarm http://<board>/mcp`, see [os/docs/commands.md](os/docs/commands.md#mcp)
 5. **Reboot** - joins your wifi, you can access via its new IP now (find it in picohive logs or on router)
 6. **Reconfigure** any time from its new ip address
 

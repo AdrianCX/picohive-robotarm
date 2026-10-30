@@ -21,17 +21,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "command_registration.h"
 #include "line_stream.h"
 
-struct Reach
-{
-    static constexpr std::string_view name = "reach";
-    static constexpr std::string_view help = "reach/<x>/<y>/<z>[/<pitch>] - the jaws to a point, mm";
-    static constexpr std::string_view ai_help = "reach/<x>/<y>/<z>[/<pitch>] - jaws to a point, mm, as where says";
-    static constexpr std::string_view mqtt_prefix = "send/";
-    static constexpr std::string_view ws_prefix = "/rc/";
-
-    bool on_header(CommandContext& ctx);
-};
-
 class PosesWhereLines : public LineStream
 {
 protected:
@@ -42,7 +31,7 @@ protected:
 struct PosesWhere
 {
     static constexpr std::string_view name = "poses/where";
-    static constexpr std::string_view help = "poses/where - every saved pose as the point reach takes, mm";
+    static constexpr std::string_view help = "poses/where - every saved pose as a joints command, and its jaws in mm";
     static constexpr std::string_view ai_help = "poses/where - each pose as a joints command, x,y,z, description";
     static constexpr std::string_view mqtt_prefix = "send/";
     static constexpr std::string_view ws_prefix = "/rc/";
@@ -60,7 +49,7 @@ private:
 struct Where
 {
     static constexpr std::string_view name = "where";
-    static constexpr std::string_view help = "where - the point between the jaws, mm, as reach takes it";
+    static constexpr std::string_view help = "where - the arm as a joints command, and the jaws in mm";
     static constexpr std::string_view ai_help = "where - the arm as a joints command, and the jaws' x,y,z in mm";
     static constexpr std::string_view mqtt_prefix = "send/";
     static constexpr std::string_view ws_prefix = "/rc/";
