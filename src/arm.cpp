@@ -24,6 +24,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "arm.h"
 #include "pico_logger.h"
+#include "pico_mjson.h"
 
 ArmManager& ArmManager::get()
 {
@@ -833,113 +834,66 @@ uint16_t ArmManager::deci_to_position(int32_t deci_degrees)
 
 uint32_t ArmManager::state_json(char *out, uint32_t size)
 {
-    int pos = snprintf(out, size, "{\"joints\":[");
+    JsonWriter json(out, size);
 
-    for (uint32_t index = 0; (index < count()) && (pos > 0) && (pos < (int)size); ++index)
+    json.begin_object().begin_array("joints");
+
+    for (uint32_t index = 0; index < count(); ++index)
     {
         const ArmJoint& joint = m_joint[index];
         ST3215& servo = m_servo[index];
         const ST3215Range& range = servo.calibration_range();
 
-        int written = snprintf(&out[pos], size - pos,
-            "%s{\"n\":\"%s\",\"s\":\"%s\",\"id\":%u,\"here\":%u,\"cal\":%u,\"caling\":%u,"
-            "\"min\":%u,\"max\":%u,"
-            "\"pos\":%u,\"deci\":%d,\"mindeci\":%d,\"maxdeci\":%d,"
-            "\"moving\":%u,\"load\":%d,\"temp\":%u,\"volt\":%u,\"seen\":%u,"
-            "\"seenmin\":%u,\"seenmax\":%u,\"wrapped\":%u}",
-            (index > 0) ? "," : "",
-            joint.name, joint.short_name, (unsigned int)joint.id,
-            joint.present ? 1u : 0u,
-            servo.is_calibrated() ? 1u : 0u,
-            servo.is_calibrating() ? 1u : 0u,
-            (unsigned int)servo.min_position(), (unsigned int)servo.max_position(),
-            (unsigned int)joint.state.position,
-            (int)position_to_deci(joint.state.position),
-            (int)position_to_deci(servo.min_position()),
-            (int)position_to_deci(servo.max_position()),
-            joint.state.moving ? 1u : 0u,
-            (int)joint.state.load,
-            (unsigned int)joint.state.temperature,
-            (unsigned int)joint.state.voltage,
-            joint.state_valid ? 1u : 0u,
-            (unsigned int)(range.empty ? 0 : range.min),
-            (unsigned int)(range.empty ? 0 : range.max),
-            range.wrapped ? 1u : 0u);
-
-        if (written < 0)
-        {
-            break;
-        }
-
-        pos += written;
+        json.begin_object()
+            .add_string("n", joint.name)
+            .add_string("s", joint.short_name)
+            .add_uint("id", joint.id)
+            .add_uint("here", joint.present ? 1 : 0)
+            .add_uint("cal", servo.is_calibrated() ? 1 : 0)
+            .add_uint("caling", servo.is_calibrating() ? 1 : 0)
+            .add_uint("min", servo.min_position())
+            .add_uint("max", servo.max_position())
+            .add_uint("pos", joint.state.position)
+            .add_int("deci", position_to_deci(joint.state.position))
+            .add_int("mindeci", position_to_deci(servo.min_position()))
+            .add_int("maxdeci", position_to_deci(servo.max_position()))
+            .add_uint("moving", joint.state.moving ? 1 : 0)
+            .add_int("load", joint.state.load)
+            .add_uint("temp", joint.state.temperature)
+            .add_uint("volt", joint.state.voltage)
+            .add_uint("seen", joint.state_valid ? 1 : 0)
+            .add_uint("seenmin", range.empty ? 0 : range.min)
+            .add_uint("seenmax", range.empty ? 0 : range.max)
+            .add_uint("wrapped", range.wrapped ? 1 : 0)
+            .end_object();
     }
 
-    if ((pos > 0) && (pos < (int)size))
+    json.end_array().begin_array("strays");
+
+    for (uint32_t which = 0; which < m_stray_count; ++which)
     {
-        int written = snprintf(&out[pos], size - pos, "],\"strays\":[");
-
-        if (written > 0)
-        {
-            pos += written;
-        }
+        json.add_uint(NULL, m_stray[which]);
     }
 
-    for (uint32_t which = 0; (which < m_stray_count) && (pos > 0) && (pos < (int)size); ++which)
+    json.end_array().begin_array("conflicts");
+
+    for (uint32_t which = 0; which < m_conflict_count; ++which)
     {
-        int written = snprintf(&out[pos], size - pos, "%s%u",
-                               (which > 0) ? "," : "", (unsigned int)m_stray[which]);
-
-        if (written < 0)
-        {
-            break;
-        }
-
-        pos += written;
+        json.add_uint(NULL, m_conflict[which]);
     }
 
-    if ((pos > 0) && (pos < (int)size))
+    json.end_array()
+        .add_uint("spare", spare_id())
+        .add_uint("error", m_bus.last_error())
+        .add_string("pose", m_play.active ? m_play.name : "")
+        .end_object();
+
+    if (!json.ok())
     {
-        int written = snprintf(&out[pos], size - pos, "],\"conflicts\":[");
-
-        if (written > 0)
-        {
-            pos += written;
-        }
+        return (uint32_t)snprintf(out, size, "{\"joints\":[],\"error\":0}");
     }
 
-    for (uint32_t which = 0; (which < m_conflict_count) && (pos > 0) && (pos < (int)size); ++which)
-    {
-        int written = snprintf(&out[pos], size - pos, "%s%u",
-                               (which > 0) ? "," : "", (unsigned int)m_conflict[which]);
-
-        if (written < 0)
-        {
-            break;
-        }
-
-        pos += written;
-    }
-
-    if ((pos > 0) && (pos < (int)size))
-    {
-        int written = snprintf(&out[pos], size - pos,
-                               "],\"spare\":%u,\"error\":%u,\"pose\":\"%s\"}",
-                               (unsigned int)spare_id(),
-                               (unsigned int)m_bus.last_error(),
-                               m_play.active ? m_play.name : "");
-
-        if (written > 0)
-        {
-            pos += written;
-        }
-    }
-
-    if ((pos < 0) || (pos >= (int)size))
-    {
-        pos = snprintf(out, size, "{\"joints\":[],\"error\":0}");
-    }
-
-    return (uint32_t)pos;
+    return json.length();
 }
 
 uint32_t ArmManager::status_text(char *out, uint32_t size)

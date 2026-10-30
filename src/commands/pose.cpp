@@ -20,6 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include <string.h>
 
 #include "arm_args.h"
+#include "pico_mjson.h"
 #include "pose.h"
 
 bool PoseCommand::on_header(CommandContext& ctx)
@@ -177,25 +178,39 @@ uint32_t PosesJson::line(uint32_t index, char *out, uint32_t size)
             first = first && !poses.at(before)->used;
         }
 
-        pos = snprintf(out, size, "%s{\"n\":\"%s\",\"d\":\"%s\",\"joints\":%u,\"away\":%5u,\"pos\":[",
-                       first ? "" : ",", stored->name, stored->description, (unsigned int)stored->joints,
-                       (unsigned int)arm.pose_distance(*stored));
+        uint32_t comma = first ? 0 : 1;
 
-        for (uint32_t joint = 0; (joint < arm.count()) && (pos > 0) && (pos < (int)size); ++joint)
+        if (size <= comma)
         {
-            pos += snprintf(&out[pos], size - pos, "%s%u", (joint > 0) ? "," : "",
-                            stored->has(joint) ? (unsigned int)stored->position[joint] : 0u);
+            return 0;
         }
 
-        if ((pos > 0) && (pos < (int)size))
+        if (!first)
         {
-            pos += snprintf(&out[pos], size - pos, "],\"o\":\"");
+            out[0] = ',';
         }
 
-        if ((pos > 0) && (pos < (int)size))
+        // Padded to 5 digits: LineStream sizes each line before sending it, and the distance changes as the arm moves.
+        char away[8];
+        int away_len = snprintf(away, sizeof(away), "%5u", (unsigned int)arm.pose_distance(*stored));
+
+        JsonWriter json(&out[comma], size - comma);
+
+        json.begin_object()
+            .add_string("n", stored->name)
+            .add_string("d", stored->description)
+            .add_uint("joints", stored->joints)
+            .add_raw("away", JsonView(away, (uint32_t)away_len))
+            .begin_array("pos");
+
+        for (uint32_t joint = 0; joint < arm.count(); ++joint)
         {
-            pos += snprintf(&out[pos], size - pos, "\"}");
+            json.add_uint(NULL, stored->has(joint) ? stored->position[joint] : 0);
         }
+
+        json.end_array().add_string("o", "").end_object();
+
+        return json.ok() ? (comma + json.length()) : 0;
     }
 
     return (pos <= 0) ? 0 : (((uint32_t)pos < size) ? (uint32_t)pos : size - 1);

@@ -21,6 +21,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "arm_args.h"
 #include "calib.h"
 #include "pico_logger.h"
+#include "pico_mjson.h"
 
 static bool reply_state(CommandContext& ctx, std::string_view name, const char *said)
 {
@@ -28,29 +29,23 @@ static bool reply_state(CommandContext& ctx, std::string_view name, const char *
     const ArmCalibration& calibration = arm.calibration().get();
 
     char text[480] = {};
-    int pos = snprintf(text, sizeof(text), "{\"said\":\"%s\",\"known\":%u,\"joints\":[", said,
-                       calibration.known() ? 1u : 0u);
+    JsonWriter json(text, sizeof(text));
 
-    for (uint32_t index = 0; (index < ArmManager::count()) && (pos > 0) && (pos < (int)sizeof(text)); ++index)
+    json.begin_object()
+        .add_string("said", said)
+        .add_uint("known", calibration.known() ? 1 : 0)
+        .begin_array("joints");
+
+    for (uint32_t index = 0; index < ArmManager::count(); ++index)
     {
-        int written = snprintf(&text[pos], sizeof(text) - pos,
-                               "%s{\"zero\":%d,\"dir\":%d,\"scale\":%d}",
-                               (index > 0) ? "," : "",
-                               (int)calibration.zero[index], (int)calibration.direction[index],
-                               (int)calibration.scale_of(index));
-
-        if (written < 0)
-        {
-            break;
-        }
-
-        pos += written;
+        json.begin_object()
+            .add_int("zero", calibration.zero[index])
+            .add_int("dir", calibration.direction[index])
+            .add_int("scale", calibration.scale_of(index))
+            .end_object();
     }
 
-    if ((pos > 0) && (pos < (int)sizeof(text)))
-    {
-        snprintf(&text[pos], sizeof(text) - pos, "]}");
-    }
+    json.end_array().end_object();
 
     return ctx.reply(text);
 }
